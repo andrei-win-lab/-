@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Учёт товаров на полках — Supabase</title>
+    <title>Учёт товаров на полках</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,13 +35,13 @@
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
       >
         <h1 class="text-3xl font-bold text-gray-800">
-          📦 Учёт товаров на полках (Supabase)v.1
+          📦 Учёт товаров на полках
         </h1>
         <div class="flex flex-wrap gap-3">
           <button
             id="loginBtn"
             onclick="showLogin()"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl font-medium"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl font-medium flex items-center gap-2"
           >
             👤 Войти как админ
           </button>
@@ -54,7 +54,7 @@
           </button>
           <button
             onclick="exportToExcel()"
-            class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl font-medium"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl font-medium flex items-center gap-2"
           >
             📊 Экспорт в Excel
           </button>
@@ -66,7 +66,7 @@
         <input
           id="searchInput"
           onkeyup="filterTable()"
-          placeholder="🔍 Поиск по названию..."
+          placeholder="🔍 Поиск по названию товара..."
           class="flex-1 px-5 py-4 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500 text-lg"
         />
         <select
@@ -99,13 +99,13 @@
       <button
         id="addBtn"
         onclick="showAddModal()"
-        class="hidden mt-8 bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-3xl text-lg font-semibold mx-auto block"
+        class="hidden mt-8 bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-3xl text-lg font-semibold mx-auto block flex items-center gap-2"
       >
         ➕ Добавить новый товар
       </button>
     </div>
 
-    <!-- Модалы (логин и редактирование) — такие же как раньше -->
+    <!-- Модал входа -->
     <div
       id="loginModal"
       class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50"
@@ -125,7 +125,10 @@
           class="w-full px-5 py-4 border rounded-2xl mb-6 text-lg"
         />
         <div class="flex gap-3">
-          <button onclick="hideLogin()" class="flex-1 py-4 text-gray-500">
+          <button
+            onclick="hideLogin()"
+            class="flex-1 py-4 text-gray-500 font-medium"
+          >
             Отмена
           </button>
           <button
@@ -138,6 +141,7 @@
       </div>
     </div>
 
+    <!-- Модал редактирования -->
     <div
       id="editModal"
       class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50"
@@ -153,7 +157,7 @@
         />
         <input
           id="prodShelf"
-          placeholder="Полка"
+          placeholder="Полка (например A-12)"
           class="w-full px-5 py-4 border rounded-2xl mb-4"
         />
         <input
@@ -168,7 +172,10 @@
           class="w-full px-5 py-4 border rounded-2xl mb-6"
         />
         <div class="flex gap-3">
-          <button onclick="hideEditModal()" class="flex-1 py-4 text-gray-500">
+          <button
+            onclick="hideEditModal()"
+            class="flex-1 py-4 text-gray-500 font-medium"
+          >
             Отмена
           </button>
           <button
@@ -182,74 +189,76 @@
         <button
           id="deleteBtn"
           onclick="deleteProduct()"
-          class="hidden mt-4 text-red-600 w-full py-3"
+          class="hidden mt-4 text-red-600 hover:text-red-700 font-medium w-full py-3"
         >
-          🗑 Удалить
+          🗑 Удалить товар
         </button>
       </div>
     </div>
 
     <script>
-      // ================== SUPABASE CONFIG ==================
-      const SUPABASE_URL = "https://thkdfpzhtvtuvihbrdri.supabase.co"; // ← Замени
+      // ================== ТВОИ SUPABASE КЛЮЧИ ==================
+      const SUPABASE_URL = "https://thkdfpzhtvtuvihbrdri.supabase.co";
       const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoa2RmcHpodHZ0dXZpaGJyZHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzAzODIsImV4cCI6MjA5MDAwNjM4Mn0.U-2MY8f_IjU7D5YeO-zLVHW-VP9S3W_DGFsHNJNv8rc"; // ← Замени
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoa2RmcHpodHZ0dXZpaGJyZHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzAzODIsImV4cCI6MjA5MDAwNjM4Mn0.U-2MY8f_IjU7D5YeO-zLVHW-VP9S3W_DGFsHNJNv8rc";
 
       const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       let currentUser = null;
-      let currentEditId = null;
+      let editingId = null;
       let allProducts = [];
 
-      // Загрузка и реал-тайм подписка
+      // Реал-тайм загрузка товаров
       async function loadProducts() {
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .order("name");
-        if (error) console.error(error);
-        else renderProducts(data || []);
+          .order("name", { ascending: true });
 
-        // Реал-тайм подписка
+        if (error) {
+          console.error(error);
+          return;
+        }
+        allProducts = data || [];
+        renderProducts(allProducts);
+
+        // Подписка на изменения в реальном времени
         supabase
-          .channel("products-changes")
+          .channel("products")
           .on(
             "postgres_changes",
             { event: "*", schema: "public", table: "products" },
-            (payload) => {
-              loadProducts(); // перезагружаем весь список при любом изменении
-            },
+            () => loadProducts(),
           )
           .subscribe();
       }
 
       function renderProducts(products) {
-        allProducts = products;
         const tbody = document.getElementById("productsTable");
         tbody.innerHTML = "";
 
         if (products.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-gray-400">Товары не найдены</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-gray-400">Товаров пока нет</td></tr>`;
           return;
         }
 
         products.forEach((p) => {
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-gray-50";
+          tr.className = "hover:bg-gray-50 transition-colors";
           tr.innerHTML = `
       <td class="px-6 py-5">
         ${
           p.image
-            ? `<img src="${p.image}" onclick="showImage('${p.image}')" class="w-14 h-14 object-cover rounded-2xl cursor-pointer border">`
-            : `<div class="w-14 h-14 bg-gray-200 rounded-2xl flex items-center justify-center text-3xl">📦</div>`
+            ? `<img src="${p.image}" onclick="showImage('${p.image}')" class="w-14 h-14 object-cover rounded-2xl cursor-pointer border border-gray-200">`
+            : `<div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center text-3xl">📦</div>`
         }
       </td>
       <td class="px-6 py-5 font-medium">${p.name}</td>
       <td class="px-6 py-5 text-gray-600">${p.shelf}</td>
-      <td class="px-6 py-5 text-center font-semibold text-2xl">${p.quantity}</td>
+      <td class="px-6 py-5 text-center font-bold text-2xl">${p.quantity}</td>
       <td class="px-6 py-5 text-right admin-only">
-        <button onclick="editProduct('${p.id}', '${p.name}', '${p.shelf}', ${p.quantity}, '${p.image || ""}')" 
-                class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-5 py-2 rounded-2xl text-sm">✏️</button>
+        <button onclick="editProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.shelf.replace(/'/g, "\\'")}', ${p.quantity}, '${p.image || ""}')" 
+                class="bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-2xl text-sm font-medium">✏️</button>
       </td>
     `;
           tbody.appendChild(tr);
@@ -275,26 +284,27 @@
           .getElementById("searchInput")
           .value.toLowerCase()
           .trim();
-        const shelf = document.getElementById("shelfFilter").value;
+        const shelfFilter = document.getElementById("shelfFilter").value;
 
         const filtered = allProducts.filter((p) => {
-          const matchName = !search || p.name.toLowerCase().includes(search);
-          const matchShelf = !shelf || p.shelf === shelf;
-          return matchName && matchShelf;
+          const matchSearch = !search || p.name.toLowerCase().includes(search);
+          const matchShelf = !shelfFilter || p.shelf === shelfFilter;
+          return matchSearch && matchShelf;
         });
 
         renderProducts(filtered);
       }
 
-      // Экспорт в Excel
       function exportToExcel() {
-        if (allProducts.length === 0) return alert("Нет данных");
+        if (allProducts.length === 0) return alert("Нет данных для экспорта");
+
         const data = allProducts.map((p) => ({
-          Название: p.name,
+          "Название товара": p.name,
           Полка: p.shelf,
           Количество: p.quantity,
-          Фото: p.image || "",
+          "Ссылка на фото": p.image || "",
         }));
+
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Товары");
@@ -305,28 +315,35 @@
       }
 
       function showImage(src) {
-        const div = document.createElement("div");
-        div.className =
+        const modal = document.createElement("div");
+        modal.className =
           "fixed inset-0 bg-black/90 flex items-center justify-center z-[100]";
-        div.innerHTML = `<img src="${src}" class="max-h-[90vh] rounded-3xl" onclick="this.parentElement.remove()">`;
-        document.body.appendChild(div);
+        modal.innerHTML = `
+    <div class="relative p-4">
+      <button onclick="this.closest('div[style*=\"fixed\"]').remove()" 
+              class="absolute -top-3 -right-3 bg-white rounded-full w-10 h-10 flex items-center justify-center text-2xl shadow-lg">✕</button>
+      <img src="${src}" class="max-h-[85vh] max-w-[90vw] rounded-3xl" alt="Фото товара">
+    </div>
+  `;
+        document.body.appendChild(modal);
       }
 
       // Авторизация
       async function login() {
-        const email = document.getElementById("email").value;
+        const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (error) alert("Ошибка: " + error.message);
+        if (error) alert("Ошибка входа: " + error.message);
         else hideLogin();
       }
 
       function logout() {
         supabase.auth.signOut();
       }
+
       function showLogin() {
         document.getElementById("loginModal").classList.remove("hidden");
       }
@@ -335,7 +352,7 @@
       }
 
       function checkAuth() {
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabase.auth.onAuthStateChange((_, session) => {
           currentUser = session?.user || null;
           const isAdmin = !!currentUser;
 
@@ -351,17 +368,14 @@
           document
             .getElementById("actionsHeader")
             .classList.toggle("hidden", !isAdmin);
-          document
-            .querySelectorAll(".admin-only")
-            .forEach(
-              (el) => (el.style.display = isAdmin ? "table-cell" : "none"),
-            );
+
+          document.querySelectorAll(".admin-only").forEach((el) => {
+            el.style.display = isAdmin ? "table-cell" : "none";
+          });
         });
       }
 
-      // Добавление / редактирование / удаление
-      let editingId = null;
-
+      // Работа с товарами
       function showAddModal() {
         editingId = null;
         document.getElementById("modalTitle").textContent = "Новый товар";
@@ -380,7 +394,7 @@
         document.getElementById("prodName").value = name;
         document.getElementById("prodShelf").value = shelf;
         document.getElementById("prodQty").value = qty;
-        document.getElementById("prodImage").value = image || "";
+        document.getElementById("prodImage").value = image;
         document.getElementById("deleteBtn").classList.remove("hidden");
         document.getElementById("editModal").classList.remove("hidden");
       }
@@ -396,7 +410,8 @@
           parseInt(document.getElementById("prodQty").value) || 0;
         const image = document.getElementById("prodImage").value.trim();
 
-        if (!name || !shelf) return alert("Название и полка обязательны");
+        if (!name || !shelf)
+          return alert("Название товара и полка обязательны!");
 
         const data = { name, shelf, quantity, image: image || null };
 
@@ -415,7 +430,7 @@
       }
 
       async function deleteProduct() {
-        if (!confirm("Удалить товар навсегда?")) return;
+        if (!confirm("Удалить этот товар навсегда?")) return;
         const { error } = await supabase
           .from("products")
           .delete()
@@ -424,7 +439,7 @@
         else hideEditModal();
       }
 
-      // Запуск
+      // Запуск приложения
       window.onload = () => {
         checkAuth();
         loadProducts();
