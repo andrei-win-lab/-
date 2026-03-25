@@ -24,9 +24,6 @@
           opacity: 1;
         }
       }
-      img:hover {
-        transform: scale(1.08);
-      }
     </style>
   </head>
   <body class="bg-gray-50 min-h-screen pb-12">
@@ -34,16 +31,14 @@
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
       >
-        <h1 class="text-3xl font-bold text-gray-800">
-          📦 Учёт товаров на полках
-        </h1>
+        <h1 class="text-3xl font-bold text-gray-800">📦 Учёт товаров</h1>
         <div class="flex flex-wrap gap-3">
           <button
             id="loginBtn"
-            onclick="showLogin()"
+            onclick="showModal('loginModal')"
             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-2xl font-medium"
           >
-            👤 Войти как админ
+            👤 Войти
           </button>
           <button
             id="logoutBtn"
@@ -56,17 +51,16 @@
             onclick="exportToExcel()"
             class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl font-medium"
           >
-            📊 Экспорт в Excel
+            📊 Excel
           </button>
         </div>
       </div>
 
-      <!-- Поиск и фильтр -->
       <div class="flex flex-col md:flex-row gap-4 mb-6">
         <input
           id="searchInput"
-          onkeyup="filterTable()"
-          placeholder="🔍 Поиск по названию товара..."
+          oninput="filterTable()"
+          placeholder="🔍 Поиск товара..."
           class="flex-1 px-5 py-4 border border-gray-300 rounded-3xl focus:outline-none focus:border-blue-500 text-lg"
         />
         <select
@@ -78,61 +72,73 @@
         </select>
       </div>
 
-      <div class="bg-white rounded-3xl shadow overflow-hidden">
-        <table class="w-full">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-4 text-left">Фото</th>
-              <th class="px-6 py-4 text-left">Товар</th>
-              <th class="px-6 py-4 text-left">Полка</th>
-              <th class="px-6 py-4 text-center">Количество</th>
-              <th id="actionsHeader" class="px-6 py-4 text-right hidden w-28">
-                Действия
-              </th>
-            </tr>
-          </thead>
-          <tbody id="productsTable" class="divide-y"></tbody>
-        </table>
+      <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-4 text-left text-gray-500 font-medium">
+                  Фото
+                </th>
+                <th class="px-6 py-4 text-left text-gray-500 font-medium">
+                  Название
+                </th>
+                <th class="px-6 py-4 text-left text-gray-500 font-medium">
+                  Полка
+                </th>
+                <th class="px-6 py-4 text-center text-gray-500 font-medium">
+                  Кол-во
+                </th>
+                <th
+                  id="actionsHeader"
+                  class="px-6 py-4 text-right text-gray-500 font-medium hidden"
+                >
+                  Действия
+                </th>
+              </tr>
+            </thead>
+            <tbody id="productsTable" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
       </div>
 
       <button
         id="addBtn"
         onclick="showAddModal()"
-        class="hidden mt-8 bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-3xl text-lg font-semibold mx-auto block"
+        class="hidden mt-8 bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-3xl text-lg font-semibold mx-auto block shadow-lg"
       >
-        ➕ Добавить новый товар
+        ➕ Добавить товар
       </button>
     </div>
 
-    <!-- Модал входа -->
     <div
       id="loginModal"
-      class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
     >
-      <div class="modal bg-white rounded-3xl p-8 w-full max-w-sm mx-4">
-        <h2 class="text-2xl font-bold mb-6">Вход для админа</h2>
+      <div class="modal bg-white rounded-3xl p-8 w-full max-w-sm">
+        <h2 class="text-2xl font-bold mb-6">Вход админа</h2>
         <input
           id="email"
           type="email"
           placeholder="Email"
-          class="w-full px-5 py-4 border rounded-2xl mb-4 text-lg"
+          class="w-full px-5 py-4 border rounded-2xl mb-4"
         />
         <input
           id="password"
           type="password"
           placeholder="Пароль"
-          class="w-full px-5 py-4 border rounded-2xl mb-6 text-lg"
+          class="w-full px-5 py-4 border rounded-2xl mb-6"
         />
         <div class="flex gap-3">
           <button
-            onclick="hideLogin()"
-            class="flex-1 py-4 text-gray-500 font-medium"
+            onclick="hideModal('loginModal')"
+            class="flex-1 py-4 text-gray-400"
           >
             Отмена
           </button>
           <button
             onclick="login()"
-            class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-semibold"
+            class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold"
           >
             Войти
           </button>
@@ -140,43 +146,45 @@
       </div>
     </div>
 
-    <!-- Модал редактирования -->
     <div
       id="editModal"
-      class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
     >
-      <div class="modal bg-white rounded-3xl p-8 w-full max-w-md mx-4">
-        <h2 id="modalTitle" class="text-2xl font-bold mb-6">
-          Редактировать товар
-        </h2>
-        <input
-          id="prodName"
-          placeholder="Название товара"
-          class="w-full px-5 py-4 border rounded-2xl mb-4"
-        />
-        <input
-          id="prodShelf"
-          placeholder="Полка"
-          class="w-full px-5 py-4 border rounded-2xl mb-4"
-        />
-        <input
-          id="prodQty"
-          type="number"
-          placeholder="Количество"
-          class="w-full px-5 py-4 border rounded-2xl mb-4"
-        />
-        <input
-          id="prodImage"
-          placeholder="Ссылка на фото"
-          class="w-full px-5 py-4 border rounded-2xl mb-6"
-        />
-        <div class="flex gap-3">
-          <button onclick="hideEditModal()" class="flex-1 py-4 text-gray-500">
+      <div class="modal bg-white rounded-3xl p-8 w-full max-w-md">
+        <h2 id="modalTitle" class="text-2xl font-bold mb-6">Товар</h2>
+        <div class="space-y-4">
+          <input
+            id="prodName"
+            placeholder="Название"
+            class="w-full px-5 py-4 border rounded-2xl"
+          />
+          <input
+            id="prodShelf"
+            placeholder="Полка"
+            class="w-full px-5 py-4 border rounded-2xl"
+          />
+          <input
+            id="prodQty"
+            type="number"
+            placeholder="Количество"
+            class="w-full px-5 py-4 border rounded-2xl"
+          />
+          <input
+            id="prodImage"
+            placeholder="URL картинки"
+            class="w-full px-5 py-4 border rounded-2xl"
+          />
+        </div>
+        <div class="flex gap-3 mt-8">
+          <button
+            onclick="hideModal('editModal')"
+            class="flex-1 py-4 text-gray-400"
+          >
             Отмена
           </button>
           <button
             onclick="saveProduct()"
-            class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-semibold"
+            class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold"
           >
             Сохранить
           </button>
@@ -184,190 +192,195 @@
         <button
           id="deleteBtn"
           onclick="deleteProduct()"
-          class="hidden mt-4 text-red-600 w-full py-3"
+          class="w-full mt-4 text-red-500 text-sm font-medium"
         >
-          🗑 Удалить товар
+          Удалить товар
         </button>
       </div>
     </div>
 
     <script>
-      // ================== SUPABASE ==================
+      // Конфигурация
       const SUPABASE_URL = "https://thkdfpzhtvtuvihbrdri.supabase.co";
-      const SUPABASE_ANON_KEY =
+      const SUPABASE_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoa2RmcHpodHZ0dXZpaGJyZHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzAzODIsImV4cCI6MjA5MDAwNjM4Mn0.U-2MY8f_IjU7D5YeO-zLVHW-VP9S3W_DGFsHNJNv8rc";
 
-      const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { createClient } = supabase;
+      const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
       let allProducts = [];
       let editingId = null;
 
-      // ===================== ФУНКЦИИ =====================
-      function showLogin() {
-        document.getElementById("loginModal").classList.remove("hidden");
-      }
+      // Инициализация
+      window.onload = async () => {
+        checkAuth();
+        await loadProducts();
+      };
 
-      function hideLogin() {
-        document.getElementById("loginModal").classList.add("hidden");
-      }
+      async function checkAuth() {
+        const {
+          data: { session },
+        } = await _supabase.auth.getSession();
+        updateUI(session);
 
-      async function login() {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-
-        if (!email || !password) return alert("Введите email и пароль");
-
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        _supabase.auth.onAuthStateChange((_event, session) => {
+          updateUI(session);
+          loadProducts();
         });
-        if (error) {
-          alert("Ошибка входа: " + error.message);
-        } else {
-          hideLogin();
-        }
       }
 
-      function logout() {
-        supabase.auth.signOut();
+      function updateUI(session) {
+        const isAuth = !!session;
+        document.getElementById("loginBtn").classList.toggle("hidden", isAuth);
+        document
+          .getElementById("logoutBtn")
+          .classList.toggle("hidden", !isAuth);
+        document.getElementById("addBtn").classList.toggle("hidden", !isAuth);
+        document
+          .getElementById("actionsHeader")
+          .classList.toggle("hidden", !isAuth);
+      }
+
+      // Работа с данными
+      async function loadProducts() {
+        const { data, error } = await _supabase
+          .from("products")
+          .select("*")
+          .order("name");
+        if (error) return console.error("Ошибка загрузки:", error.message);
+        allProducts = data || [];
+        renderProducts(allProducts);
+        updateShelfFilter();
+      }
+
+      function renderProducts(products) {
+        const tbody = document.getElementById("productsTable");
+        const isAuth = document
+          .getElementById("loginBtn")
+          .classList.contains("hidden");
+
+        tbody.innerHTML =
+          products.length === 0
+            ? `<tr><td colspan="5" class="py-12 text-center text-gray-400">Товаров не найдено</td></tr>`
+            : "";
+
+        products.forEach((p) => {
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-gray-50 transition-colors";
+          tr.innerHTML = `
+            <td class="px-6 py-4">${p.image ? `<img src="${p.image}" onclick="zoomImage('${p.image}')" class="w-12 h-12 object-cover rounded-xl cursor-pointer hover:scale-110 transition">` : '<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-xl">📦</div>'}</td>
+            <td class="px-6 py-4 font-semibold text-gray-800">${p.name}</td>
+            <td class="px-6 py-4 text-gray-500">${p.shelf}</td>
+            <td class="px-6 py-4 text-center text-2xl font-bold text-blue-600">${p.quantity}</td>
+            <td class="px-6 py-4 text-right ${isAuth ? "" : "hidden"}">
+              <button onclick="showEditModal('${p.id}')" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-xl transition">✏️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Функции модалок
+      function showModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+      }
+      function hideModal(id) {
+        document.getElementById(id).classList.add("hidden");
       }
 
       function showAddModal() {
         editingId = null;
-        document.getElementById("modalTitle").textContent = "Новый товар";
+        document.getElementById("modalTitle").textContent = "➕ Новый товар";
         document.getElementById("prodName").value = "";
         document.getElementById("prodShelf").value = "";
         document.getElementById("prodQty").value = "0";
         document.getElementById("prodImage").value = "";
         document.getElementById("deleteBtn").classList.add("hidden");
-        document.getElementById("editModal").classList.remove("hidden");
+        showModal("editModal");
       }
 
-      function editProduct(id, name, shelf, qty, image = "") {
+      function showEditModal(id) {
+        const p = allProducts.find((x) => x.id === id);
+        if (!p) return;
         editingId = id;
-        document.getElementById("modalTitle").textContent =
-          "Редактировать товар";
-        document.getElementById("prodName").value = name;
-        document.getElementById("prodShelf").value = shelf;
-        document.getElementById("prodQty").value = qty;
-        document.getElementById("prodImage").value = image || "";
+        document.getElementById("modalTitle").textContent = "✏️ Редактирование";
+        document.getElementById("prodName").value = p.name;
+        document.getElementById("prodShelf").value = p.shelf;
+        document.getElementById("prodQty").value = p.quantity;
+        document.getElementById("prodImage").value = p.image || "";
         document.getElementById("deleteBtn").classList.remove("hidden");
-        document.getElementById("editModal").classList.remove("hidden");
+        showModal("editModal");
       }
 
-      function hideEditModal() {
-        document.getElementById("editModal").classList.add("hidden");
+      // CRUD операции
+      async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const { error } = await _supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) alert("Ошибка входа: " + error.message);
+        else hideModal("loginModal");
+      }
+
+      async function logout() {
+        await _supabase.auth.signOut();
       }
 
       async function saveProduct() {
-        const name = document.getElementById("prodName").value.trim();
-        const shelf = document.getElementById("prodShelf").value.trim();
-        const quantity =
-          parseInt(document.getElementById("prodQty").value) || 0;
-        const image = document.getElementById("prodImage").value.trim();
+        const payload = {
+          name: document.getElementById("prodName").value.trim(),
+          shelf: document.getElementById("prodShelf").value.trim(),
+          quantity: parseInt(document.getElementById("prodQty").value) || 0,
+          image: document.getElementById("prodImage").value.trim() || null,
+        };
 
-        if (!name || !shelf) return alert("Название и полка обязательны!");
+        if (!payload.name || !payload.shelf)
+          return alert("Заполните Название и Полку!");
 
-        const data = { name, shelf, quantity, image: image || null };
+        const { error } = editingId
+          ? await _supabase.from("products").update(payload).eq("id", editingId)
+          : await _supabase.from("products").insert([payload]);
 
-        let error;
-        if (editingId) {
-          ({ error } = await supabase
-            .from("products")
-            .update(data)
-            .eq("id", editingId));
-        } else {
-          ({ error } = await supabase.from("products").insert([data]));
+        if (error) alert(error.message);
+        else {
+          hideModal("editModal");
+          loadProducts();
         }
-
-        if (error) alert("Ошибка сохранения: " + error.message);
-        else hideEditModal();
       }
 
       async function deleteProduct() {
-        if (!confirm("Удалить товар навсегда?")) return;
-        const { error } = await supabase
+        if (!confirm("Удалить этот товар?")) return;
+        const { error } = await _supabase
           .from("products")
           .delete()
           .eq("id", editingId);
         if (error) alert(error.message);
-        else hideEditModal();
-      }
-
-      function exportToExcel() {
-        if (allProducts.length === 0) return alert("Нет данных для экспорта");
-
-        const data = allProducts.map((p) => ({
-          Название: p.name,
-          Полка: p.shelf,
-          Количество: p.quantity,
-          Фото: p.image || "",
-        }));
-
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Товары");
-        XLSX.writeFile(
-          wb,
-          `Учёт_товаров_${new Date().toISOString().slice(0, 10)}.xlsx`,
-        );
-      }
-
-      function showImage(src) {
-        const div = document.createElement("div");
-        div.className =
-          "fixed inset-0 bg-black/90 flex items-center justify-center z-[100]";
-        div.innerHTML = `<img src="${src}" class="max-h-[90vh] rounded-3xl" onclick="this.parentElement.remove()">`;
-        document.body.appendChild(div);
-      }
-
-      // Основная загрузка и реал-тайм
-      async function loadProducts() {
-        const { data, error } = await supabase
-          .from("products")
-          .select("*")
-          .order("name");
-        if (error) console.error(error);
         else {
-          allProducts = data || [];
-          renderProducts(allProducts);
+          hideModal("editModal");
+          loadProducts();
         }
       }
 
-      function renderProducts(products) {
-        const tbody = document.getElementById("productsTable");
-        tbody.innerHTML = "";
+      // Фильтры и экспорт
+      function filterTable() {
+        const query = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const shelf = document.getElementById("shelfFilter").value;
+        const filtered = allProducts.filter(
+          (p) =>
+            p.name.toLowerCase().includes(query) &&
+            (!shelf || p.shelf === shelf),
+        );
+        renderProducts(filtered);
+      }
 
-        if (products.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-gray-400">Товаров пока нет</td></tr>`;
-          return;
-        }
-
-        products.forEach((p) => {
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-gray-50";
-          tr.innerHTML = `
-      <td class="px-6 py-5">
-        ${
-          p.image
-            ? `<img src="${p.image}" onclick="showImage('${p.image}')" class="w-14 h-14 object-cover rounded-2xl cursor-pointer">`
-            : `<div class="w-14 h-14 bg-gray-200 rounded-2xl flex items-center justify-center text-3xl">📦</div>`
-        }
-      </td>
-      <td class="px-6 py-5 font-medium">${p.name}</td>
-      <td class="px-6 py-5 text-gray-600">${p.shelf}</td>
-      <td class="px-6 py-5 text-center font-semibold text-2xl">${p.quantity}</td>
-      <td class="px-6 py-5 text-right admin-only">
-        <button onclick="editProduct('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.shelf.replace(/'/g, "\\'")}', ${p.quantity}, '${p.image || ""}')" 
-                class="bg-blue-100 hover:bg-blue-200 px-5 py-2 rounded-2xl text-sm">✏️</button>
-      </td>
-    `;
-          tbody.appendChild(tr);
-        });
-
-        // Обновляем фильтр полок
-        const shelves = [...new Set(products.map((p) => p.shelf))].sort();
+      function updateShelfFilter() {
         const select = document.getElementById("shelfFilter");
+        const current = select.value;
+        const shelves = [...new Set(allProducts.map((p) => p.shelf))].sort();
         select.innerHTML = '<option value="">Все полки</option>';
         shelves.forEach((s) => {
           const opt = document.createElement("option");
@@ -375,53 +388,31 @@
           opt.textContent = s;
           select.appendChild(opt);
         });
+        select.value = current;
       }
 
-      function filterTable() {
-        const search = document
-          .getElementById("searchInput")
-          .value.toLowerCase()
-          .trim();
-        const shelf = document.getElementById("shelfFilter").value;
-
-        const filtered = allProducts.filter((p) => {
-          return (
-            (!search || p.name.toLowerCase().includes(search)) &&
-            (!shelf || p.shelf === shelf)
-          );
-        });
-        renderProducts(filtered);
+      function exportToExcel() {
+        const ws = XLSX.utils.json_to_sheet(
+          allProducts.map((p) => ({
+            Название: p.name,
+            Полка: p.shelf,
+            "Кол-во": p.quantity,
+            Фото: p.image,
+          })),
+        );
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Склад");
+        XLSX.writeFile(wb, `Склад_${new Date().toLocaleDateString()}.xlsx`);
       }
 
-      // Проверка авторизации
-      function checkAuth() {
-        supabase.auth.onAuthStateChange((event, session) => {
-          const isLoggedIn = !!session?.user;
-
-          document
-            .getElementById("loginBtn")
-            .classList.toggle("hidden", isLoggedIn);
-          document
-            .getElementById("logoutBtn")
-            .classList.toggle("hidden", !isLoggedIn);
-          document
-            .getElementById("addBtn")
-            .classList.toggle("hidden", !isLoggedIn);
-          document
-            .getElementById("actionsHeader")
-            .classList.toggle("hidden", !isLoggedIn);
-
-          document.querySelectorAll(".admin-only").forEach((el) => {
-            el.style.display = isLoggedIn ? "table-cell" : "none";
-          });
-        });
+      function zoomImage(src) {
+        const div = document.createElement("div");
+        div.className =
+          "fixed inset-0 bg-black/90 flex items-center justify-center z-[100] p-4 cursor-pointer";
+        div.innerHTML = `<img src="${src}" class="max-h-full rounded-2xl shadow-2xl">`;
+        div.onclick = () => div.remove();
+        document.body.appendChild(div);
       }
-
-      // Запуск
-      window.onload = () => {
-        checkAuth();
-        loadProducts();
-      };
     </script>
   </body>
 </html>
